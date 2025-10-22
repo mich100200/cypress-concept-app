@@ -393,7 +393,7 @@
     </nav>
   </div>
 
-  <!-- Modals -->
+  <!-- Menu Modal -->
   <dialog id="menuModal" class="modal">
     <header><strong>Menu</strong></header>
     <div class="content">Add anything you want in here: nav links, toggles, about, etc.</div>
@@ -402,12 +402,46 @@
     </footer>
   </dialog>
 
+  <!-- Quick Create for CTE -->
   <dialog id="quickModal" class="modal">
-    <header><strong>Quick Create</strong></header>
-    <div class="content">This could be a quick-add form. Tell me the fields and behaviors you want.</div>
+    <header><strong>Quick Create – CTE Tools</strong></header>
+    <div class="content" style="display:grid;gap:12px">
+      <button class="btn primary" onclick="window.open('https://www.cypresscollege.edu/services/counseling/', '_blank')">
+        🎓 Schedule Career Counseling
+      </button>
+
+      <button class="btn" onclick="window.open('https://www.cypresscollege.edu/academics/career-education/', '_blank')">
+        🧰 Request Lab / Equipment Checkout
+      </button>
+
+      <button class="btn" onclick="window.open('https://careers.cypresscollege.edu/employers/', '_blank')">
+        💼 Post Internship / Job Opportunity
+      </button>
+
+      <button class="btn" onclick="openCertForm()">
+        🧾 Submit Industry Certification Proof
+      </button>
+
+      <button class="btn" onclick="window.open('https://careers.cypresscollege.edu/', '_blank')">
+        🌐 Visit Career Education Website
+      </button>
+    </div>
     <footer>
-      <button class="btn" onclick="closeModal('quickModal')">Cancel</button>
-      <button class="btn primary" onclick="toast('Saved!'); closeModal('quickModal')">Save</button>
+      <button class="btn" onclick="closeModal('quickModal')">Close</button>
+    </footer>
+  </dialog>
+
+  <!-- Certification Upload Inline Modal -->
+  <dialog id="certFormModal" class="modal">
+    <header><strong>Upload Certification Proof</strong></header>
+    <div class="content">
+      <p>Please upload a screenshot or PDF of your earned certification (e.g., CompTIA Security+, AWS Cloud Practitioner).</p>
+      <input type="file" id="certFile" accept=".pdf,.png,.jpg,.jpeg" style="margin:8px 0;">
+      <input type="text" id="certName" placeholder="Certification Name" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);">
+    </div>
+    <footer>
+      <button class="btn" onclick="closeModal('certFormModal')">Cancel</button>
+      <button class="btn primary" onclick="submitCert()">Submit</button>
     </footer>
   </dialog>
 
@@ -430,7 +464,6 @@
       views[key].classList.add('active');
       tabs[key].setAttribute('aria-selected', 'true');
       document.getElementById('appTitle').textContent = key.charAt(0).toUpperCase() + key.slice(1);
-      // keep scroll sensible
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -481,7 +514,7 @@
     function slideTo(id,i){ const s=sliders[id]; if(!s) return; s.index = (i+s.count)%s.count; renderSlider(id); }
     function slideNext(id){ const s=sliders[id]; if(!s) return; s.index = (s.index+1)%s.count; renderSlider(id); }
     function slidePrev(id){ const s=sliders[id]; if(!s) return; s.index = (s.index-1+s.count)%s.count; renderSlider(id); }
-    function startAuto(id){ const s=sliders[id]; if(!s) return; stopAuto(id); s.timer = setInterval(()=>slideNext(id), 5000); }
+    function startAuto(id){ const s=sliders[id]; if(!s) return; stopAuto(id); s.timer = setInterval(()=>{ slideNext(id); renderSlider(id); }, 5000); }
     function stopAuto(id){ const s=sliders[id]; if(!s) return; if(s.timer) clearInterval(s.timer); s.timer=null; }
 
     /* ---------- Live Tile Filtering ---------- */
@@ -568,6 +601,21 @@
       // If system changes and user is on 'system', reflect it (and update logo)
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.addEventListener?.('change', ()=>{ if((localStorage.getItem(THEME_KEY)||'system')==='system') applyTheme('system'); });
+    }
+
+    /* ---------- CTE Quick Create helpers ---------- */
+    function openCertForm(){
+      const d=document.getElementById('certFormModal');
+      if(d?.showModal) d.showModal();
+      else d?.setAttribute('open','');
+    }
+    function submitCert(){
+      const file=document.getElementById('certFile').files[0];
+      const name=document.getElementById('certName').value.trim();
+      if(!file||!name){toast('Please fill out all fields');return;}
+      toast(`Submitted ${name}`);
+      closeModal('certFormModal');
+      // TODO: integrate with backend / Google Form endpoint for real uploads
     }
 
     /* ---------- Boot ---------- */
