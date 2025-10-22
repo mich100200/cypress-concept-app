@@ -20,6 +20,7 @@
       --tile-fg: #ffffff;    /* tile text/icon color */
       --icon-ink: #ffffff;   /* icon color on blue chip */
       --safe-area-inset-bottom: env(safe-area-inset-bottom);
+      --tab-h: 64px;         /* fixed bottom tab height */
       color-scheme: dark;
     }
     @media (prefers-color-scheme: light) {
@@ -40,7 +41,7 @@
         --bg:#f6f8ff; --fg:#0b1220; --muted:#4f46e5; --card:#ffffff; --border:#e5e7eb; --tile-fg:#0b1220; --icon-ink:#021836; color-scheme:light;
       }
     }
-    /* Force theme override outside @media for stronger support */
+    /* Force theme override outside @media */
     html[data-theme="dark"]  { --bg:#0b1020; --fg:#f8fafc; --muted:#6e7df7; --card:#0f172a; --border:#1f2937; --tile-fg:#ffffff; --icon-ink:#ffffff; color-scheme:dark; }
     html[data-theme="light"] { --bg:#f6f8ff; --fg:#0b1220; --muted:#4f46e5; --card:#ffffff; --border:#e5e7eb; --tile-fg:#0b1220; --icon-ink:#021836; color-scheme:light; }
 
@@ -58,7 +59,7 @@
     }
 
     /* App Shell */
-    .app { display: grid; grid-template-rows: auto auto 1fr auto; min-height: 100vh; overflow-x: hidden; }
+    .app { display: grid; grid-template-rows: auto auto 1fr; min-height: 100vh; overflow-x: hidden; }
 
     /* Logo Header */
     .logo-header { text-align: center; padding: 16px 0 8px; }
@@ -79,7 +80,14 @@
     .title { font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; }
     .seg { display:flex; gap:6px; align-items:center; }
 
-    main { padding: 1rem; overflow-y: auto; display: grid; gap: 12px; }
+    main { 
+      padding: 1rem;
+      overflow-y: auto;
+      display: grid;
+      gap: 12px;
+      /* Make room for fixed bottom tabs */
+      padding-bottom: calc(var(--tab-h) + 16px + var(--safe-area-inset-bottom));
+    }
 
     /* Card */
     .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 8px 20px -12px rgba(0,0,0,.15); }
@@ -126,19 +134,39 @@
     .tile:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
     .tile:active { transform: translateY(1px); }
 
-    /* FAB */
+    /* FAB above fixed tabs */
     .fab {
-      position: fixed; right: 16px; bottom: calc(72px + var(--safe-area-inset-bottom));
-      width: 56px; height: 56px; border-radius: 18px; border: none;
-      display: grid; place-items: center; font-size: 1.4rem; color: #052e16;
+      position: fixed;
+      right: 16px;
+      bottom: calc(var(--tab-h) + 16px + var(--safe-area-inset-bottom));
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      border: none;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      color: #052e16;
       background: radial-gradient(120% 120% at 50% 10%, #34d399 0%, #22c55e 60%, #16a34a 100%);
       box-shadow: 0 10px 20px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.25);
+      z-index: 60;
     }
 
-    /* Tabs */
-    nav.tabs { position: sticky; bottom: 0; z-index: 10; background: color-mix(in oklab, var(--bg) 80%, black 10%); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
-    .tabs ul { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
-    .tabs button { background: transparent; border: none; color: #94a3b8; padding: .7rem 0 .5rem; display: grid; place-items: center; gap: 4px; width: 100%; }
+    /* Fixed Tabs */
+    nav.tabs {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--tab-h);
+      z-index: 50;
+      background: color-mix(in oklab, var(--bg) 80%, black 10%);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding-bottom: var(--safe-area-inset-bottom);
+    }
+    .tabs ul { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; height: 100%; padding: 0; }
+    .tabs button { background: transparent; border: none; color: #94a3b8; padding: .7rem 0 .5rem; display: grid; place-items: center; gap: 4px; width: 100%; height: 100%; }
     .tabs button[aria-selected="true"] { color: var(--fg); font-weight: 700; }
     .tabs .label { font-size: .7rem; }
 
@@ -331,7 +359,7 @@
         <p id="noResults" style="display:none;opacity:.8;">No links match your search.</p>
       </section>
 
-      <!-- Search View -->
+      <!-- Search View (uses the same filter) -->
       <section id="view-search" class="view" role="region" aria-label="Search">
         <div class="card">
           <h3>Search links</h3>
@@ -355,7 +383,7 @@
     <!-- FAB -->
     <button class="fab" id="fab" aria-label="Create" title="Create" onclick="openModal('quickModal')">＋</button>
 
-    <!-- Tabs -->
+    <!-- Fixed Tabs -->
     <nav class="tabs" aria-label="Primary">
       <ul>
         <li><button id="tab-home" aria-selected="true" onclick="switchTab('home')">🏠<span class="label">Home</span></button></li>
@@ -402,6 +430,7 @@
       views[key].classList.add('active');
       tabs[key].setAttribute('aria-selected', 'true');
       document.getElementById('appTitle').textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      // keep scroll sensible
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -415,7 +444,7 @@
       let t=document.getElementById('toast');
       if(!t){
         t=document.createElement('div'); t.id='toast';
-        Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px',transform:'translateX(-50%)',background:'rgba(15,23,42,.9)',border:'1px solid var(--border)',padding:'10px 14px',borderRadius:'12px',fontWeight:'600',color:'var(--fg)',boxShadow:'0 10px 24px rgba(0,0,0,.35)',zIndex:9999});
+        Object.assign(t.style,{position:'fixed',left:'50%',bottom: 'calc(var(--tab-h) + 26px + var(--safe-area-inset-bottom))',transform:'translateX(-50%)',background:'rgba(15,23,42,.9)',border:'1px solid var(--border)',padding:'10px 14px',borderRadius:'12px',fontWeight:'600',color:'var(--fg)',boxShadow:'0 10px 24px rgba(0,0,0,.35)',zIndex:9999});
         document.body.appendChild(t);
       }
       t.textContent=msg; t.style.opacity='1';
@@ -481,15 +510,12 @@
     const themeBtn = document.getElementById('themeBtn');
     const ccLogo = document.getElementById('ccLogo');
 
-    // Candidate logo URLs: [lightTheme, darkTheme]
+    // Candidate logo URLs: [lightTheme, (fallbacks...)] and [darkTheme]
     const LOGO_LIGHT_CANDIDATES = [
-      // Full-color stacked logo (light backgrounds)
       "https://www.cypresscollege.edu/wp-content/uploads/CC_logo_stack_4c_official.png",
-      // Site's general color logo
       "https://www.cypresscollege.edu/wp-content/uploads/Cypress-College-Logo.png"
     ];
     const LOGO_DARK_CANDIDATES = [
-      // White stacked logo (dark backgrounds)
       "https://www.cypresscollege.edu/wp-content/uploads/CC_logo_stack_1c_official_wht.png"
     ];
 
@@ -544,10 +570,15 @@
       mq.addEventListener?.('change', ()=>{ if((localStorage.getItem(THEME_KEY)||'system')==='system') applyTheme('system'); });
     }
 
+    /* ---------- Boot ---------- */
     document.addEventListener('DOMContentLoaded', ()=>{
       initSlider('heroSlider');
       initTheme();
-      document.getElementById('searchInputTab').value = document.getElementById('searchInputHome').value;
+      // Hook Search tab to reuse Home’s filter
+      const searchTabInput = document.getElementById('searchInputTab');
+      if(searchTabInput){
+        searchTabInput.value = document.getElementById('searchInputHome').value;
+      }
     });
   </script>
 </body>
