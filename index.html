@@ -7,13 +7,13 @@
   <style>
     :root {
       --bg: #0b1020;
-      --fg: #f8fafc;          /* near-white */
-      --muted: #a5b4fc;       /* soft indigo for subtle text */
-      --accent: #0b63ce;      /* Charger Blue (approx) */
-      --accent-2: #FCD422;    /* Premier Gold */
-      --card: #0f172a;        /* slate-900 */
-      --border: #1f2937;      /* gray-800 */
-      --danger: #ef4444;      /* red-500 */
+      --fg: #f8fafc;
+      --muted: #a5b4fc;
+      --accent: #0b63ce;   /* Charger Blue */
+      --accent-2: #FCD422; /* Premier Gold */
+      --card: #0f172a;
+      --border: #1f2937;
+      --danger: #ef4444;
       --safe-area-inset-bottom: env(safe-area-inset-bottom);
     }
 
@@ -21,125 +21,66 @@
     html, body { height: 100%; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color: var(--fg);
       background: radial-gradient(1200px 800px at 50% -10%, rgba(11,99,206,.25) 0%, var(--bg) 55%);
     }
 
     /* App Shell */
-    .app {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100dvh;
-      overflow: clip;
-    }
+    .app { display: grid; grid-template-rows: auto 1fr auto; min-height: 100dvh; overflow: clip; }
+    header.appbar { position: sticky; top: 0; z-index: 10; display:flex; align-items:center; gap:.5rem; padding:.75rem 1rem; background: rgba(17,24,39,.7); backdrop-filter: blur(10px); border-bottom:1px solid var(--border); }
+    .iconbtn { appearance:none; border:none; background:transparent; color:var(--fg); width:36px; height:36px; border-radius:12px; display:grid; place-items:center; }
+    .iconbtn:active { background:#0b1220; }
+    .title { font-weight:700; font-size:1.1rem; letter-spacing:.2px; }
 
-    header.appbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      padding: .75rem 1rem;
-      background: rgba(17, 24, 39, .7);
-      backdrop-filter: saturate(160%) blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
-    .iconbtn {
-      appearance: none; border: none; background: transparent; color: var(--fg);
-      width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center;
-    }
-    .iconbtn:active { background: #0b1220; }
-    .title { font-weight: 700; font-size: 1.05rem; letter-spacing: .2px; }
+    main { padding: 1rem; overflow: auto; display:grid; gap:12px; }
 
-    main {
-      padding: 1rem;
-      overflow: auto;
-      display: grid; gap: 12px;
-    }
+    /* Cards */
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 0 rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6); }
+    .card h3 { margin:0 0 6px; font-size:1rem; }
+    .card p { margin:0; color:var(--muted); font-size:.9rem; }
 
-    /* Sample components */
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 1px 0 rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6);
-    }
-    .card h3 { margin: 0 0 6px; font-size: 1rem; }
-    .card p { margin: 0; color: var(--muted); font-size: .9rem; }
-
-    /* SLIDER */
-    .slider { position: relative; border:1px solid rgba(11,99,206,.35); border-radius:18px; overflow:hidden; background:#0c1426; }
+    /* Hero Slider */
+    .slider { position: relative; border-radius:18px; overflow:hidden; background:#0c1426; border:1px solid rgba(11,99,206,.35); }
     .slides { display:flex; width:100%; transition: transform .6s ease; }
-    .slide { flex: 0 0 100%; padding:20px; min-height:120px; display:grid; align-content:center; gap:6px; color:var(--fg); }
-    .slide h2 { margin:0; font-size:1.1rem }
-    .slide p { margin:0; color:var(--muted) }
-    .slide.s1 { background: radial-gradient(140% 120% at 0% -30%, rgba(252,212,34,.18) 0%, rgba(11,99,206,.25) 55%, rgba(255,255,255,.03) 100%); }
-    .slide.s2 { background: radial-gradient(140% 120% at 100% -30%, rgba(11,99,206,.18) 0%, rgba(252,212,34,.25) 55%, rgba(255,255,255,.03) 100%); }
-    .slide.s3 { background: radial-gradient(120% 120% at 50% -20%, rgba(60,148,255,.18) 0%, rgba(11,99,206,.18) 50%, rgba(255,255,255,.03) 100%); }
+    .slide { position:relative; flex:0 0 100%; min-height:200px; color:var(--fg); background-size:cover; background-position:center; }
+    @media (min-width:480px){ .slide { min-height:240px; } }
+    .slide .shade { position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
+    .slide .inner { position:relative; padding:16px 18px; display:grid; gap:6px; max-width: 88%; background: rgba(50,50,50,0.45); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+    .slide h2 { margin:0; font-size:1.1rem; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+    .slide p { margin:0; color:#e5e7eb; }
     .slider .dots { position:absolute; left:50%; bottom:10px; transform:translateX(-50%); display:flex; gap:6px; }
-    .slider .dot { width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.35); border:1px solid rgba(255,255,255,.5); }
-    .slider .dot[aria-current="true"] { background: var(--accent-2); border-color: rgba(0,0,0,.3); }
+    .slider .dot { width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.7); }
+    .slider .dot[aria-current="true"] { background: var(--accent-2); }
     .slider .nav { position:absolute; inset:0; display:flex; justify-content:space-between; align-items:center; pointer-events:none; }
     .slider .nav button { pointer-events:auto; appearance:none; border:none; background:rgba(2,8,23,.5); color:var(--fg); width:36px; height:36px; border-radius:10px; display:grid; place-items:center; margin:0 8px; border:1px solid var(--border); }
 
-    /* TILES */
-    .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    @media (min-width: 480px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
-    .tile {
-      display: grid; grid-template-rows: 1fr auto; align-items: center; justify-items: start;
-      min-height: 96px; padding: 14px; border-radius: 16px; text-decoration: none; color: var(--fg);
-      background: radial-gradient(140% 120% at 0% -20%, rgba(252,212,34,.35) 0%, rgba(11,99,206,.18) 50%, rgba(255,255,255,.03) 100%);
-      border: 1px solid var(--border);
-      box-shadow: 0 6px 18px -10px rgba(0,0,0,.5);
-    }
-    .tile .icon { font-size: 1.4rem; line-height: 1; margin-bottom: 8px; display: inline-flex; align-items:center; justify-content:center; width: 36px; height: 36px; border-radius: 10px; background: rgba(11,99,206,.18); border: 1px solid rgba(255,255,255,.06); }
-    .tile .label { font-weight: 700; letter-spacing: .2px; }
-    .tile:active { transform: translateY(1px); }
+    /* Tiles */
+    .tiles { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+    @media (min-width:480px){ .tiles { grid-template-columns: repeat(3, 1fr); } }
+    .tile { display:grid; grid-template-rows: 1fr auto; align-items:center; justify-items:start; min-height:96px; padding:14px; border-radius:16px; text-decoration:none; color:var(--fg); background: radial-gradient(140% 120% at 0% -20%, rgba(252,212,34,.35) 0%, rgba(11,99,206,.18) 50%, rgba(255,255,255,.03) 100%); border:1px solid var(--border); box-shadow: 0 6px 18px -10px rgba(0,0,0,.5); }
+    .tile .icon { font-size:1.4rem; margin-bottom:8px; }
+    .tile .label { font-weight:700; letter-spacing:.2px; }
 
     /* Bottom Nav */
-    nav.tabs {
-      position: sticky; bottom: 0; z-index: 10;
-      background: rgba(17, 24, 39, .85);
-      backdrop-filter: blur(10px) saturate(160%);
-      border-top: 1px solid var(--border);
-      padding-bottom: calc(10px + var(--safe-area-inset-bottom));
-    }
-    .tabs ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
-    .tabs button {
-      width: 100%; padding: .7rem 0 .5rem; background: transparent; border: none; color: var(--muted);
-      display: grid; place-items: center; gap: 4px;
-    }
-    .tabs button[aria-selected="true"] { color: var(--fg); font-weight: 700; }
-    .tabs .label { font-size: .7rem; }
+    nav.tabs { position: sticky; bottom:0; z-index:10; background: rgba(17,24,39,.85); backdrop-filter: blur(10px) saturate(160%); border-top:1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
+    .tabs ul { list-style:none; margin:0; padding:0; display:grid; grid-template-columns: repeat(3, 1fr); }
+    .tabs button { width:100%; padding:.7rem 0 .5rem; background:transparent; border:none; color:#94a3b8; display:grid; place-items:center; gap:4px; }
+    .tabs button[aria-selected="true"] { color:var(--fg); font-weight:700; }
+    .tabs .label { font-size:.7rem; }
 
     /* FAB */
-    .fab {
-      position: fixed; right: 16px; bottom: calc(72px + var(--safe-area-inset-bottom));
-      width: 56px; height: 56px; border-radius: 18px; border: none;
-      display: grid; place-items: center; font-size: 1.4rem; color: #052e16;
-      background: radial-gradient(120% 120% at 50% 10%, #34d399 0%, #22c55e 60%, #16a34a 100%);
-      box-shadow: 0 10px 20px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.25);
-    }
+    .fab { position: fixed; right:16px; bottom: calc(72px + var(--safe-area-inset-bottom)); width:56px; height:56px; border-radius:18px; border:none; display:grid; place-items:center; font-size:1.4rem; color:#052e16; background: radial-gradient(120% 120% at 50% 10%, #34d399 0%, #22c55e 60%, #16a34a 100%); box-shadow: 0 10px 20px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.25); }
 
     /* Views */
-    .view { display: none; }
-    .view.active { display: grid; gap: 12px; }
+    .view { display:none; }
+    .view.active { display:grid; gap:12px; }
 
     /* Modal */
-    dialog.modal {
-      width: min(520px, 92vw);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #0b1220;
-      color: var(--fg);
-      padding: 0;
-    }
-    .modal header, .modal footer { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-    .modal footer { border-top: 1px solid var(--border); border-bottom: none; display: flex; gap: 8px; justify-content: flex-end; }
-    .modal .content { padding: 16px; color: var(--muted); }
+    dialog.modal { width:min(520px,92vw); border:1px solid var(--border); border-radius:16px; background:#0b1220; color:var(--fg); padding:0; }
+    .modal header, .modal footer { padding:12px 16px; border-bottom:1px solid var(--border); }
+    .modal footer { border-top:1px solid var(--border); border-bottom:none; display:flex; gap:8px; justify-content:flex-end; }
+    .modal .content { padding:16px; color:#cbd5e1; }
   </style>
 </head>
 <body>
@@ -151,9 +92,6 @@
       <button class="iconbtn" aria-label="Menu" title="Menu" onclick="openModal('menuModal')">☰</button>
     </header>
 
-          <button onclick="dismiss('topAlert')">Dismiss</button>
-    </div>
-
     <main id="content">
       <!-- Home View -->
       <section id="view-home" class="view active" role="region" aria-label="Home">
@@ -162,23 +100,32 @@
             <span style="display:inline-grid; place-items:center; width:28px; height:28px; border-radius:8px; background: var(--accent); color: #021836; font-weight:900">CC</span>
             Cypress College
           </h3>
-          <p style="margin:0; color: var(--muted)">Quick links for students, faculty, and visitors. Modeled after a tile-style mobile layout.</p>
+          <p style="margin:0; color: var(--muted)">Quick links for students, faculty, and visitors.</p>
         </div>
 
-        <!-- HERO SLIDESHOW -->
+        <!-- HERO SLIDESHOW (with translucent gray highlight on text) -->
         <section class="slider" id="heroSlider" aria-label="Highlights">
           <div class="slides">
-            <article class="slide s1">
-              <h2>Spring Registration</h2>
-              <p>Check your priority date in myGateway and plan your classes.</p>
+            <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible_SEM_Exterior.jpg')">
+              <div class="shade"></div>
+              <div class="inner">
+                <h2>Science, Engineering & Math</h2>
+                <p>Explore state-of-the-art labs and programs in STEM.</p>
+              </div>
             </article>
-            <article class="slide s2">
-              <h2>Financial Aid Deadlines</h2>
-              <p>Don’t miss FAFSA & scholarship dates—visit Financial Aid.</p>
+            <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible-Pond-Tribute-Garden_Flags-2.jpg')">
+              <div class="shade"></div>
+              <div class="inner">
+                <h2>Pond & Tribute Garden</h2>
+                <p>Find your campus community in a beautiful setting.</p>
+              </div>
             </article>
-            <article class="slide s3">
-              <h2>Campus Events</h2>
-              <p>Clubs, workshops, and career fairs are happening this week.</p>
+            <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible-Student-Center_from-CCCPLX.jpg')">
+              <div class="shade"></div>
+              <div class="inner">
+                <h2>Student Center</h2>
+                <p>Services, study spaces, and events—all in one hub.</p>
+              </div>
             </article>
           </div>
           <div class="nav" aria-hidden="true">
@@ -186,9 +133,9 @@
             <button type="button" onclick="slideNext('heroSlider')" aria-label="Next">⟶</button>
           </div>
           <div class="dots" role="tablist" aria-label="Slide navigation">
-            <button class="dot" role="tab" aria-selected="true" aria-controls="" onclick="slideTo('heroSlider',0)" aria-current="true"></button>
-            <button class="dot" role="tab" aria-selected="false" aria-controls="" onclick="slideTo('heroSlider',1)"></button>
-            <button class="dot" role="tab" aria-selected="false" aria-controls="" onclick="slideTo('heroSlider',2)"></button>
+            <button class="dot" role="tab" aria-selected="true" onclick="slideTo('heroSlider',0)" aria-current="true"></button>
+            <button class="dot" role="tab" aria-selected="false" onclick="slideTo('heroSlider',1)"></button>
+            <button class="dot" role="tab" aria-selected="false" onclick="slideTo('heroSlider',2)"></button>
           </div>
         </section>
 
@@ -277,18 +224,16 @@
     <header><strong>Menu</strong></header>
     <div class="content">Add anything you want in here: nav links, toggles, about, etc.</div>
     <footer>
-      <button class="btn" onclick="closeModal('menuModal')">Close</button>
+      <button class="card" onclick="closeModal('menuModal')">Close</button>
     </footer>
   </dialog>
 
   <dialog id="quickModal" class="modal">
     <header><strong>Quick Create</strong></header>
-    <div class="content">
-      This could be a quick-add form. Tell me the fields and behaviors you want.
-    </div>
+    <div class="content">This could be a quick-add form. Tell me the fields and behaviors you want.</div>
     <footer>
-      <button class="btn" onclick="closeModal('quickModal')">Cancel</button>
-      <button class="btn" onclick="toast('Saved!'); closeModal('quickModal')">Save</button>
+      <button class="card" onclick="closeModal('quickModal')">Cancel</button>
+      <button class="card" onclick="toast('Saved!'); closeModal('quickModal')">Save</button>
     </footer>
   </dialog>
 
@@ -312,45 +257,13 @@
       document.getElementById('appTitle').textContent = key.charAt(0).toUpperCase() + key.slice(1);
     }
 
-    function openModal(id) {
-      const d = document.getElementById(id);
-      if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open','');
-    }
-    function closeModal(id) {
-      const d = document.getElementById(id);
-      if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
-    }
+    function openModal(id){ const d=document.getElementById(id); if(d?.showModal) d.showModal(); else d?.setAttribute('open',''); }
+    function closeModal(id){ const d=document.getElementById(id); if(d?.close) d.close(); else d?.removeAttribute('open'); }
 
     // Tiny toast
-    let toastTimer;
-    function toast(msg) {
-      clearTimeout(toastTimer);
-      let t = document.getElementById('toast');
-      if (!t) {
-        t = document.createElement('div');
-        t.id = 'toast';
-        t.style.position = 'fixed';
-        t.style.left = '50%';
-        t.style.bottom = '90px';
-        t.style.transform = 'translateX(-50%)';
-        t.style.background = 'rgba(15, 23, 42, .9)';
-        t.style.border = '1px solid var(--border)';
-        t.style.padding = '10px 14px';
-        t.style.borderRadius = '12px';
-        t.style.fontWeight = '600';
-        t.style.color = 'var(--fg)';
-        t.style.boxShadow = '0 10px 24px rgba(0,0,0,.35)';
-        document.body.appendChild(t);
-      }
-      t.textContent = msg;
-      t.style.opacity = '1';
-      toastTimer = setTimeout(() => t.style.opacity = '0', 1400);
-    }
+    let toastTimer; function toast(msg){ clearTimeout(toastTimer); let t=document.getElementById('toast'); if(!t){ t=document.createElement('div'); t.id='toast'; Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px',transform:'translateX(-50%)',background:'rgba(15,23,42,.9)',border:'1px solid var(--border)',padding:'10px 14px',borderRadius:'12px',fontWeight:'600',color:'var(--fg)',boxShadow:'0 10px 24px rgba(0,0,0,.35)'}); document.body.appendChild(t);} t.textContent=msg; t.style.opacity='1'; toastTimer=setTimeout(()=>t.style.opacity='0',1400); }
 
-    // Respect prefers-reduced-motion for any future animations
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      function dismiss(id){ const el = document.getElementById(id); if(el) el.remove(); }
-      // Slider logic
+    // Slider logic
     const sliders = {};
     function initSlider(id){
       const root = document.getElementById(id); if(!root) return;
