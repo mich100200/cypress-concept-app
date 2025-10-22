@@ -1,21 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Cypress College App</title>
   <style>
+    /* -----------------------------
+       THEME SYSTEM (light/dark/system)
+       ----------------------------- */
     :root {
-      --bg: #0b1020;            /* background base */
-      --fg: #f8fafc;            /* foreground text */
-      --muted: #a5b4fc;         /* subtle text */
-      --accent: #0b63ce;        /* Charger Blue */
-      --accent-2: #FCD422;      /* Premier Gold */
-      --card: #0f172a;          /* card bg */
-      --border: #1f2937;        /* borders */
+      /* Dark defaults */
+      --bg: #0b1020;
+      --fg: #f8fafc;
+      --muted: #a5b4fc;
+      --accent: #0b63ce;     /* Charger Blue */
+      --accent-2: #FCD422;   /* Premier Gold */
+      --card: #0f172a;
+      --border: #1f2937;
+      --tile-fg: #ffffff;    /* tile text/icon color */
+      --icon-ink: #ffffff;   /* icon color on blue chip */
       --safe-area-inset-bottom: env(safe-area-inset-bottom);
+      color-scheme: dark;
     }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f8ff;
+        --fg: #0b1220;
+        --muted: #4f46e5;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --tile-fg: #0b1220;    /* dark text on light theme */
+        --icon-ink: #021836;   /* darker ink on blue chip */
+        color-scheme: light;
+      }
+      html[data-theme="dark"] {
+        --bg:#0b1020; --fg:#f8fafc; --muted:#6e7df7; --card:#0f172a; --border:#1f2937; --tile-fg:#ffffff; --icon-ink:#ffffff; color-scheme:dark;
+      }
+      html[data-theme="light"] {
+        --bg:#f6f8ff; --fg:#0b1220; --muted:#4f46e5; --card:#ffffff; --border:#e5e7eb; --tile-fg:#0b1220; --icon-ink:#021836; color-scheme:light;
+      }
+    }
+    /* Force theme override outside @media for stronger support */
+    html[data-theme="dark"]  { --bg:#0b1020; --fg:#f8fafc; --muted:#6e7df7; --card:#0f172a; --border:#1f2937; --tile-fg:#ffffff; --icon-ink:#ffffff; color-scheme:dark; }
+    html[data-theme="light"] { --bg:#f6f8ff; --fg:#0b1220; --muted:#4f46e5; --card:#ffffff; --border:#e5e7eb; --tile-fg:#0b1220; --icon-ink:#021836; color-scheme:light; }
 
+    /* ------------- Base ------------- */
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color: var(--fg); }
 
@@ -41,20 +70,25 @@
       position: sticky; top: 0; z-index: 10;
       display: flex; align-items: center; gap: .5rem;
       padding: .75rem 1rem;
-      background: rgba(17, 24, 39, 0.85);
+      background: color-mix(in oklab, var(--bg) 60%, black 10%);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
     .iconbtn { appearance: none; border: none; background: transparent; color: var(--fg); width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; }
-    .iconbtn:active { background: rgba(255,255,255,0.06); }
+    .iconbtn:active { background: rgba(128,128,128,0.12); }
     .title { font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; }
+    .seg { display:flex; gap:6px; align-items:center; }
 
     main { padding: 1rem; overflow-y: auto; display: grid; gap: 12px; }
 
     /* Card */
-    .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 0 rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6); }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 8px 20px -12px rgba(0,0,0,.15); }
     .card h3 { margin:0 0 6px; font-size:1rem; }
     .card p { margin:0; color:var(--muted); font-size:.9rem; }
+
+    /* Search input (used on Home + Search tab) */
+    .searchbar { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--border); border-radius:14px; background: var(--card); }
+    .searchbar input { flex:1; background:transparent; border:none; outline:none; color:var(--fg); font-size:.95rem; }
 
     /* Hero Slider */
     .slider { position: relative; border-radius: 18px; overflow: hidden; background: #0c1426; border: 1px solid rgba(11,99,206,.35); }
@@ -64,7 +98,7 @@
     .slide .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
     .slide .inner { position: relative; padding: 16px 18px; display: grid; gap: 6px; max-width: 88%; background: rgba(50,50,50,0.45); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
     .slide h2 { margin: 0; font-size: 1.1rem; }
-    .slide p { margin: 0; color: #e5e7eb; }
+    .slide p { margin: 0; color: color-mix(in oklab, var(--fg) 90%, white 10%); }
     .slider .dots { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; gap: 6px; }
     .slider .dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.45); border: 1px solid rgba(255,255,255,.7); }
     .slider .dot[aria-current="true"] { background: var(--accent-2); }
@@ -74,20 +108,21 @@
     /* Tiles grid */
     .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 
-    /* Cypress-style quick-link tiles (white text) */
+    /* Cypress-style quick-link tiles (theme-aware text) */
     .tile {
       position: relative; display: grid; grid-template-rows: auto 1fr; gap: 8px;
       text-decoration: none; padding: 14px; border-radius: 16px;
       border: 1px solid var(--border); background: var(--card);
-      box-shadow: 0 4px 16px rgba(0,0,0,.35); overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2); overflow: hidden;
+      color: var(--tile-fg);
     }
     .tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,99,206,.25), rgba(11,99,206,.12)); opacity: .9; }
     .tile::after { content: ""; position: absolute; top: 0; left: 0; height: 4px; width: 100%; background: var(--accent-2); opacity: .95; }
     .tile > * { position: relative; z-index: 1; }
     .tile .iconwrap { width: 38px; height: 38px; border-radius: 12px; background: var(--accent); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
-    .tile .iconwrap svg { width: 20px; height: 20px; color: #ffffff; }
-    .tile .label { font-weight: 800; letter-spacing: .3px; color: #ffffff; }
-    .tile .sub { font-size: .8rem; color: #ffffff; opacity: .9; }
+    .tile .iconwrap svg { width: 20px; height: 20px; color: var(--icon-ink); }
+    .tile .label { font-weight: 800; letter-spacing: .3px; color: var(--tile-fg); }
+    .tile .sub { font-size: .8rem; color: var(--tile-fg); opacity: .9; }
     .tile:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
     .tile:active { transform: translateY(1px); }
 
@@ -101,7 +136,7 @@
     }
 
     /* Tabs */
-    nav.tabs { position: sticky; bottom: 0; z-index: 10; background: rgba(17,24,39,.85); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
+    nav.tabs { position: sticky; bottom: 0; z-index: 10; background: color-mix(in oklab, var(--bg) 80%, black 10%); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
     .tabs ul { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
     .tabs button { background: transparent; border: none; color: #94a3b8; padding: .7rem 0 .5rem; display: grid; place-items: center; gap: 4px; width: 100%; }
     .tabs button[aria-selected="true"] { color: var(--fg); font-weight: 700; }
@@ -112,63 +147,85 @@
     .view.active { display: grid; gap: 12px; }
 
     /* Modal */
-    dialog.modal { width: min(520px, 92vw); border: 1px solid var(--border); border-radius: 16px; background: #0b1220; color: var(--fg); padding: 0; }
+    dialog.modal { width: min(520px, 92vw); border: 1px solid var(--border); border-radius: 16px; background: var(--card); color: var(--fg); padding: 0; }
     .modal header, .modal footer { padding: 12px 16px; border-bottom: 1px solid var(--border); }
     .modal footer { border-top: 1px solid var(--border); border-bottom: none; display: flex; gap: 8px; justify-content: flex-end; }
-    .modal .content { padding: 16px; color: #cbd5e1; }
+    .modal .content { padding: 16px; color: color-mix(in oklab, var(--fg) 80%, #cbd5e1 20%); }
+    .btn { padding:10px 14px; border-radius:10px; border:1px solid var(--border); background: var(--card); color: var(--fg); }
+    .btn.primary { background: var(--accent); color:#021836; font-weight:800; border:none; }
+    .slide .cta { display:flex; gap:8px; flex-wrap:wrap; }
+    .slide .cta a { text-decoration:none; }
   </style>
 </head>
 
 <body>
   <div class="app" id="app">
-    <!-- Cypress Logo -->
+    <!-- Cypress Logo (auto-swaps for theme; robust fallbacks) -->
     <div class="logo-header">
       <a href="https://www.cypresscollege.edu/" target="_blank" rel="noopener">
-        <img src="https://www.cypresscollege.edu/wp-content/uploads/Cypress-College-Logo.png" alt="Cypress College Logo">
+        <img id="ccLogo"
+          src=""
+          alt="Cypress College Logo"
+          width="200" height="200"
+          style="width:160px;max-width:70%;height:auto;"
+        />
       </a>
     </div>
 
-    <!-- App Bar -->
+    <!-- App Bar with theme toggle -->
     <header class="appbar">
       <button class="iconbtn" id="btnBack" aria-label="Back" title="Back" onclick="toast('Back tapped')">⟵</button>
       <div class="title" id="appTitle">Home</div>
       <div style="margin-left:auto"></div>
-      <button class="iconbtn" aria-label="Menu" title="Menu" onclick="openModal('menuModal')">☰</button>
+      <div class="seg">
+        <button class="iconbtn" id="themeBtn" aria-label="Theme: System" title="Theme: System">🌓</button>
+        <button class="iconbtn" aria-label="Menu" title="Menu" onclick="openModal('menuModal')">☰</button>
+      </div>
     </header>
 
     <main id="content">
       <!-- Home View -->
       <section id="view-home" class="view active" role="region" aria-label="Home">
-        <div class="card" style="background:linear-gradient(180deg, rgba(11,99,206,.25), rgba(255,255,255,.02)); border-color: rgba(11,99,206,.35)">
-          <h3 style="display:flex; align-items:center; gap:.5rem; margin:0 0 8px">
-            <span style="display:inline-grid; place-items:center; width:28px; height:28px; border-radius:8px; background: var(--accent); color: #021836; font-weight:900">CC</span>
-            Cypress College
-          </h3>
-          <p style="margin:0; color: var(--muted)">Quick links for students, faculty, and visitors.</p>
-        </div>
+        <!-- Search that filters tiles live -->
+        <label class="searchbar" aria-label="Search links">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="searchInputHome" type="search" placeholder="Search links (e.g., Canvas, Financial Aid)..." oninput="filterTiles(this.value)">
+        </label>
 
-        <!-- HERO SLIDESHOW -->
+        <!-- HERO SLIDESHOW with deep links -->
         <section class="slider" id="heroSlider" aria-label="Highlights">
           <div class="slides">
             <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible_SEM_Exterior.jpg')">
-              <div class="shade"></div>
+              <a class="shade" href="https://www.cypresscollege.edu/academics/s-t-e-m/" target="_blank" rel="noopener" aria-label="Go to STEM programs"></a>
               <div class="inner">
                 <h2>Science, Engineering & Math</h2>
                 <p>Explore state-of-the-art labs and programs in STEM.</p>
+                <div class="cta">
+                  <a class="btn primary" href="https://www.cypresscollege.edu/academics/s-t-e-m/" target="_blank" rel="noopener">Explore Programs</a>
+                  <a class="btn" href="https://www.cypresscollege.edu/campus-map/" target="_blank" rel="noopener">Find the Building</a>
+                </div>
               </div>
             </article>
             <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible-Pond-Tribute-Garden_Flags-2.jpg')">
-              <div class="shade"></div>
+              <a class="shade" href="https://www.cypresscollege.edu/campus-tour/" target="_blank" rel="noopener" aria-label="Go to Campus Tour"></a>
               <div class="inner">
                 <h2>Pond & Tribute Garden</h2>
                 <p>Find your campus community in a beautiful setting.</p>
+                <div class="cta">
+                  <a class="btn primary" href="https://www.cypresscollege.edu/campus-tour/" target="_blank" rel="noopener">Campus Tour</a>
+                  <a class="btn" href="https://www.cypresscollege.edu/events/" target="_blank" rel="noopener">Upcoming Events</a>
+                </div>
               </div>
             </article>
             <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible-Student-Center_from-CCCPLX.jpg')">
-              <div class="shade"></div>
+              <a class="shade" href="https://www.cypresscollege.edu/services/" target="_blank" rel="noopener" aria-label="Go to Student Services"></a>
               <div class="inner">
                 <h2>Student Center</h2>
                 <p>Services, study spaces, and events—all in one hub.</p>
+                <div class="cta">
+                  <a class="btn primary" href="https://www.cypresscollege.edu/services/" target="_blank" rel="noopener">Student Services</a>
+                  <a class="btn" href="https://www.cypresscollege.edu/library/" target="_blank" rel="noopener">Library</a>
+                </div>
               </div>
             </article>
           </div>
@@ -184,99 +241,105 @@
         </section>
 
         <!-- Cypress-style Tiles -->
-        <nav class="tiles" aria-label="Quick links">
-          <a class="tile" href="https://www.cypresscollege.edu/admissions-and-records/apply/" target="_blank" rel="noopener">
+        <nav class="tiles" aria-label="Quick links" id="tiles">
+          <a class="tile" data-tags="apply admissions register application" href="https://www.cypresscollege.edu/admissions-and-records/apply/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v-7"/><path d="M9 12h6"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19v-7"/><path d="M9 12h6"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
             </span>
             <span class="label">Apply Now</span>
             <span class="sub">Start your application</span>
           </a>
-          <a class="tile" href="https://cypresscollege.instructure.com/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="canvas courses grades lms" href="https://cypresscollege.instructure.com/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
             </span>
             <span class="label">Canvas</span>
             <span class="sub">Courses & grades</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/find-classes/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="classes schedule search open registration" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/find-classes/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </span>
             <span class="label">Class Schedule</span>
             <span class="sub">Find open classes</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="catalog degrees certificates programs" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V6a2 2 0 0 1 2-2h13"/><path d="M20 22V4a2 2 0 0 0-2-2H6"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 0 1 2-2h13"/><path d="M20 22V4a2 2 0 0 0-2-2H6"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20"/></svg>
             </span>
             <span class="label">Catalog</span>
             <span class="sub">Degrees & certificates</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/services/financial-aid/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="financial aid fafsa scholarships money help" href="https://www.cypresscollege.edu/services/financial-aid/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h.01"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h.01"/></svg>
             </span>
             <span class="label">Financial Aid</span>
             <span class="sub">FAFSA & scholarships</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/services/counseling/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="counseling counselor plan map pathway" href="https://www.cypresscollege.edu/services/counseling/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="m19 7-7-5-7 5"/><circle cx="12" cy="14" r="4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="m19 7-7-5-7 5"/><circle cx="12" cy="14" r="4"/></svg>
             </span>
             <span class="label">Counseling</span>
             <span class="sub">Plan your pathway</span>
           </a>
-          <a class="tile" href="https://mygateway.nocccd.edu/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="mygateway portal login account" href="https://mygateway.nocccd.edu/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </span>
             <span class="label">myGateway</span>
             <span class="sub">Portal login</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/maps/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="map maps parking directions" href="https://www.cypresscollege.edu/maps/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18 3 21V5l6-3 6 3 6-3v16l-6 3-6-3Z"/><path d="M9 18V2"/><path d="M15 22V6"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18 3 21V5l6-3 6 3 6-3v16l-6 3-6-3Z"/><path d="M9 18V2"/><path d="M15 22V6"/></svg>
             </span>
             <span class="label">Maps & Parking</span>
             <span class="sub">Get around campus</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/faculty-and-staff-directory/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="directory people staff faculty" href="https://www.cypresscollege.edu/faculty-and-staff-directory/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>
             </span>
             <span class="label">Directory</span>
             <span class="sub">Find people & offices</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/events/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="events calendar activities" href="https://www.cypresscollege.edu/events/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
             </span>
             <span class="label">Events</span>
             <span class="sub">What’s happening</span>
           </a>
-          <a class="tile" href="https://www.cypresscollege.edu/news/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="news stories updates" href="https://www.cypresscollege.edu/news/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
             </span>
             <span class="label">News</span>
             <span class="sub">Latest stories</span>
           </a>
-          <a class="tile" href="https://careers.cypresscollege.edu/" target="_blank" rel="noopener">
+          <a class="tile" data-tags="career careers pathways cte" href="https://careers.cypresscollege.edu/" target="_blank" rel="noopener">
             <span class="iconwrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h4a2 2 0 0 1 2 2v2H8V8a2 2 0 0 1 2-2Z"/><path d="M16 10h2a2 2 0 0 1 2 2v6H4v-6a2 2 0 0 1 2-2h2"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6h4a2 2 0 0 1 2 2v2H8V8a2 2 0 0 1 2-2Z"/><path d="M16 10h2a2 2 0 0 1 2 2v6H4v-6a2 2 0 0 1 2-2h2"/></svg>
             </span>
             <span class="label">Career Ed</span>
             <span class="sub">Programs & pathways</span>
           </a>
         </nav>
+
+        <p id="noResults" style="display:none;opacity:.8;">No links match your search.</p>
       </section>
 
       <!-- Search View -->
       <section id="view-search" class="view" role="region" aria-label="Search">
         <div class="card">
-          <h3>Search</h3>
-          <p>Placeholder search view. We can add inputs, filters, and results.</p>
+          <h3>Search links</h3>
+          <label class="searchbar" aria-label="Search links">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="searchInputTab" type="search" placeholder="Type to filter tiles..." oninput="syncSearchInputs(this.value)">
+          </label>
+          <p style="margin-top:8px;color:var(--muted);">Results update in real time below in Home → Quick links.</p>
         </div>
       </section>
 
@@ -284,7 +347,7 @@
       <section id="view-profile" class="view" role="region" aria-label="Profile">
         <div class="card">
           <h3>Your Profile</h3>
-          <p>Stub profile area. Say the word and we’ll add fields, avatars, settings, etc.</p>
+          <p>Stub profile area. We can add fields, avatars, settings, etc.</p>
         </div>
       </section>
     </main>
@@ -307,7 +370,7 @@
     <header><strong>Menu</strong></header>
     <div class="content">Add anything you want in here: nav links, toggles, about, etc.</div>
     <footer>
-      <button class="card" onclick="closeModal('menuModal')">Close</button>
+      <button class="btn" onclick="closeModal('menuModal')">Close</button>
     </footer>
   </dialog>
 
@@ -315,8 +378,8 @@
     <header><strong>Quick Create</strong></header>
     <div class="content">This could be a quick-add form. Tell me the fields and behaviors you want.</div>
     <footer>
-      <button class="card" onclick="closeModal('quickModal')">Cancel</button>
-      <button class="card" onclick="toast('Saved!'); closeModal('quickModal')">Save</button>
+      <button class="btn" onclick="closeModal('quickModal')">Cancel</button>
+      <button class="btn primary" onclick="toast('Saved!'); closeModal('quickModal')">Save</button>
     </footer>
   </dialog>
 
@@ -392,8 +455,99 @@
     function startAuto(id){ const s=sliders[id]; if(!s) return; stopAuto(id); s.timer = setInterval(()=>slideNext(id), 5000); }
     function stopAuto(id){ const s=sliders[id]; if(!s) return; if(s.timer) clearInterval(s.timer); s.timer=null; }
 
+    /* ---------- Live Tile Filtering ---------- */
+    function filterTiles(query){
+      const q = query.trim().toLowerCase();
+      const tiles = document.querySelectorAll('#tiles .tile');
+      let visible = 0;
+      tiles.forEach(tile=>{
+        const label = tile.querySelector('.label')?.textContent.toLowerCase() || '';
+        const sub = tile.querySelector('.sub')?.textContent.toLowerCase() || '';
+        const tags = tile.getAttribute('data-tags') || '';
+        const match = !q || label.includes(q) || sub.includes(q) || tags.toLowerCase().includes(q);
+        tile.style.display = match ? '' : 'none';
+        if(match) visible++;
+      });
+      document.getElementById('noResults').style.display = (visible===0) ? '' : 'none';
+    }
+    function syncSearchInputs(val){
+      const home = document.getElementById('searchInputHome');
+      if(home.value !== val) home.value = val;
+      filterTiles(val);
+    }
+
+    /* ---------- Theme Toggle (System ↔ Dark ↔ Light) + Logo Swap ---------- */
+    const THEME_KEY = 'cc_theme';
+    const themeBtn = document.getElementById('themeBtn');
+    const ccLogo = document.getElementById('ccLogo');
+
+    // Candidate logo URLs: [lightTheme, darkTheme]
+    const LOGO_LIGHT_CANDIDATES = [
+      // Full-color stacked logo (light backgrounds)
+      "https://www.cypresscollege.edu/wp-content/uploads/CC_logo_stack_4c_official.png",
+      // Site's general color logo
+      "https://www.cypresscollege.edu/wp-content/uploads/Cypress-College-Logo.png"
+    ];
+    const LOGO_DARK_CANDIDATES = [
+      // White stacked logo (dark backgrounds)
+      "https://www.cypresscollege.edu/wp-content/uploads/CC_logo_stack_1c_official_wht.png"
+    ];
+
+    function pickSystemTheme(){
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function setLogoFromList(list){
+      let i = 0;
+      function tryNext(){
+        if(i >= list.length){
+          // final fallback: replace with text
+          ccLogo.replaceWith(Object.assign(document.createElement('span'), {textContent:'Cypress College'}));
+          return;
+        }
+        ccLogo.onerror = ()=>{ i++; tryNext(); };
+        ccLogo.src = list[i];
+        ccLogo.srcset = list[i] + " 2x";
+      }
+      tryNext();
+    }
+
+    function updateLogo(mode){
+      const effective = mode === 'system' ? pickSystemTheme() : mode;
+      if(effective === 'light'){
+        setLogoFromList(LOGO_LIGHT_CANDIDATES);
+      } else {
+        setLogoFromList(LOGO_DARK_CANDIDATES);
+      }
+    }
+
+    function applyTheme(mode){
+      // mode: 'system' | 'dark' | 'light'
+      document.documentElement.setAttribute('data-theme', mode);
+      localStorage.setItem(THEME_KEY, mode);
+      themeBtn.setAttribute('aria-label', `Theme: ${mode[0].toUpperCase()+mode.slice(1)}`);
+      themeBtn.title = `Theme: ${mode[0].toUpperCase()+mode.slice(1)}`;
+      themeBtn.textContent = mode === 'dark' ? '🌙' : mode === 'light' ? '☀️' : '🌓';
+      updateLogo(mode);
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY) || 'system';
+      applyTheme(saved);
+      themeBtn.addEventListener('click', ()=>{
+        const current = localStorage.getItem(THEME_KEY) || 'system';
+        const next = current === 'system' ? 'dark' : current === 'dark' ? 'light' : 'system';
+        applyTheme(next);
+      });
+      // If system changes and user is on 'system', reflect it (and update logo)
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener?.('change', ()=>{ if((localStorage.getItem(THEME_KEY)||'system')==='system') applyTheme('system'); });
+    }
+
     document.addEventListener('DOMContentLoaded', ()=>{
       initSlider('heroSlider');
+      initTheme();
+      document.getElementById('searchInputTab').value = document.getElementById('searchInputHome').value;
     });
   </script>
 </body>
