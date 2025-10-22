@@ -6,88 +6,132 @@
   <title>Cypress College App</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --fg: #f8fafc;
-      --muted: #a5b4fc;
-      --accent: #0b63ce;   /* Charger Blue */
-      --accent-2: #FCD422; /* Premier Gold */
-      --card: #0f172a;
-      --border: #1f2937;
-      --danger: #ef4444;
+      --bg: #0b1020;            /* background base */
+      --fg: #f8fafc;            /* foreground text */
+      --muted: #a5b4fc;         /* subtle text */
+      --accent: #0b63ce;        /* Charger Blue */
+      --accent-2: #FCD422;      /* Premier Gold */
+      --card: #0f172a;          /* card bg */
+      --border: #1f2937;        /* borders */
       --safe-area-inset-bottom: env(safe-area-inset-bottom);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; }
+    html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color: var(--fg); }
+
+    /* Full-screen background that stays consistent */
     body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color: var(--fg);
-      background: radial-gradient(1200px 800px at 50% -10%, rgba(11,99,206,.25) 0%, var(--bg) 55%);
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 50% -10%, rgba(11,99,206,.25) 0%, var(--bg) 70%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
     }
 
     /* App Shell */
-    .app { display: grid; grid-template-rows: auto 1fr auto; min-height: 100dvh; overflow: clip; }
-    header.appbar { position: sticky; top: 0; z-index: 10; display:flex; align-items:center; gap:.5rem; padding:.75rem 1rem; background: rgba(17,24,39,.7); backdrop-filter: blur(10px); border-bottom:1px solid var(--border); }
-    .iconbtn { appearance:none; border:none; background:transparent; color:var(--fg); width:36px; height:36px; border-radius:12px; display:grid; place-items:center; }
-    .iconbtn:active { background:#0b1220; }
-    .title { font-weight:700; font-size:1.1rem; letter-spacing:.2px; }
+    .app { display: grid; grid-template-rows: auto auto 1fr auto; min-height: 100vh; overflow-x: hidden; }
 
-    main { padding: 1rem; overflow: auto; display:grid; gap:12px; }
+    /* Logo Header */
+    .logo-header { text-align: center; padding: 16px 0 8px; }
+    .logo-header a { display:inline-block; line-height:0; }
+    .logo-header img { width: 160px; height: auto; max-width: 70%; }
 
-    /* Cards */
+    /* App Bar */
+    header.appbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: .5rem;
+      padding: .75rem 1rem;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .iconbtn { appearance: none; border: none; background: transparent; color: var(--fg); width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; }
+    .iconbtn:active { background: rgba(255,255,255,0.06); }
+    .title { font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; }
+
+    main { padding: 1rem; overflow-y: auto; display: grid; gap: 12px; }
+
+    /* Card */
     .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 0 rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6); }
     .card h3 { margin:0 0 6px; font-size:1rem; }
     .card p { margin:0; color:var(--muted); font-size:.9rem; }
 
     /* Hero Slider */
-    .slider { position: relative; border-radius:18px; overflow:hidden; background:#0c1426; border:1px solid rgba(11,99,206,.35); }
-    .slides { display:flex; width:100%; transition: transform .6s ease; }
-    .slide { position:relative; flex:0 0 100%; min-height:200px; color:var(--fg); background-size:cover; background-position:center; }
-    @media (min-width:480px){ .slide { min-height:240px; } }
-    .slide .shade { position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
-    .slide .inner { position:relative; padding:16px 18px; display:grid; gap:6px; max-width: 88%; background: rgba(50,50,50,0.45); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
-    .slide h2 { margin:0; font-size:1.1rem; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
-    .slide p { margin:0; color:#e5e7eb; }
-    .slider .dots { position:absolute; left:50%; bottom:10px; transform:translateX(-50%); display:flex; gap:6px; }
-    .slider .dot { width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.7); }
+    .slider { position: relative; border-radius: 18px; overflow: hidden; background: #0c1426; border: 1px solid rgba(11,99,206,.35); }
+    .slides { display: flex; width: 100%; transition: transform .6s ease; }
+    .slide { position: relative; flex: 0 0 100%; min-height: 220px; background-size: cover; background-position: center; color: var(--fg); }
+    @media (min-width: 480px) { .slide { min-height: 260px; } }
+    .slide .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
+    .slide .inner { position: relative; padding: 16px 18px; display: grid; gap: 6px; max-width: 88%; background: rgba(50,50,50,0.45); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+    .slide h2 { margin: 0; font-size: 1.1rem; }
+    .slide p { margin: 0; color: #e5e7eb; }
+    .slider .dots { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; gap: 6px; }
+    .slider .dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.45); border: 1px solid rgba(255,255,255,.7); }
     .slider .dot[aria-current="true"] { background: var(--accent-2); }
     .slider .nav { position:absolute; inset:0; display:flex; justify-content:space-between; align-items:center; pointer-events:none; }
     .slider .nav button { pointer-events:auto; appearance:none; border:none; background:rgba(2,8,23,.5); color:var(--fg); width:36px; height:36px; border-radius:10px; display:grid; place-items:center; margin:0 8px; border:1px solid var(--border); }
 
-    /* Tiles */
-    .tiles { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
-    @media (min-width:480px){ .tiles { grid-template-columns: repeat(3, 1fr); } }
-    .tile { display:grid; grid-template-rows: 1fr auto; align-items:center; justify-items:start; min-height:96px; padding:14px; border-radius:16px; text-decoration:none; color:var(--fg); background: radial-gradient(140% 120% at 0% -20%, rgba(252,212,34,.35) 0%, rgba(11,99,206,.18) 50%, rgba(255,255,255,.03) 100%); border:1px solid var(--border); box-shadow: 0 6px 18px -10px rgba(0,0,0,.5); }
-    .tile .icon { font-size:1.4rem; margin-bottom:8px; }
-    .tile .label { font-weight:700; letter-spacing:.2px; }
+    /* Tiles grid */
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 
-    /* Bottom Nav */
-    nav.tabs { position: sticky; bottom:0; z-index:10; background: rgba(17,24,39,.85); backdrop-filter: blur(10px) saturate(160%); border-top:1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
-    .tabs ul { list-style:none; margin:0; padding:0; display:grid; grid-template-columns: repeat(3, 1fr); }
-    .tabs button { width:100%; padding:.7rem 0 .5rem; background:transparent; border:none; color:#94a3b8; display:grid; place-items:center; gap:4px; }
-    .tabs button[aria-selected="true"] { color:var(--fg); font-weight:700; }
-    .tabs .label { font-size:.7rem; }
+    /* Cypress-style quick-link tiles (white text) */
+    .tile {
+      position: relative; display: grid; grid-template-rows: auto 1fr; gap: 8px;
+      text-decoration: none; padding: 14px; border-radius: 16px;
+      border: 1px solid var(--border); background: var(--card);
+      box-shadow: 0 4px 16px rgba(0,0,0,.35); overflow: hidden;
+    }
+    .tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,99,206,.25), rgba(11,99,206,.12)); opacity: .9; }
+    .tile::after { content: ""; position: absolute; top: 0; left: 0; height: 4px; width: 100%; background: var(--accent-2); opacity: .95; }
+    .tile > * { position: relative; z-index: 1; }
+    .tile .iconwrap { width: 38px; height: 38px; border-radius: 12px; background: var(--accent); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
+    .tile .iconwrap svg { width: 20px; height: 20px; color: #ffffff; }
+    .tile .label { font-weight: 800; letter-spacing: .3px; color: #ffffff; }
+    .tile .sub { font-size: .8rem; color: #ffffff; opacity: .9; }
+    .tile:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
+    .tile:active { transform: translateY(1px); }
 
     /* FAB */
-    .fab { position: fixed; right:16px; bottom: calc(72px + var(--safe-area-inset-bottom)); width:56px; height:56px; border-radius:18px; border:none; display:grid; place-items:center; font-size:1.4rem; color:#052e16; background: radial-gradient(120% 120% at 50% 10%, #34d399 0%, #22c55e 60%, #16a34a 100%); box-shadow: 0 10px 20px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.25); }
+    .fab {
+      position: fixed; right: 16px; bottom: calc(72px + var(--safe-area-inset-bottom));
+      width: 56px; height: 56px; border-radius: 18px; border: none;
+      display: grid; place-items: center; font-size: 1.4rem; color: #052e16;
+      background: radial-gradient(120% 120% at 50% 10%, #34d399 0%, #22c55e 60%, #16a34a 100%);
+      box-shadow: 0 10px 20px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.25);
+    }
+
+    /* Tabs */
+    nav.tabs { position: sticky; bottom: 0; z-index: 10; background: rgba(17,24,39,.85); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding-bottom: calc(10px + var(--safe-area-inset-bottom)); }
+    .tabs ul { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
+    .tabs button { background: transparent; border: none; color: #94a3b8; padding: .7rem 0 .5rem; display: grid; place-items: center; gap: 4px; width: 100%; }
+    .tabs button[aria-selected="true"] { color: var(--fg); font-weight: 700; }
+    .tabs .label { font-size: .7rem; }
 
     /* Views */
-    .view { display:none; }
-    .view.active { display:grid; gap:12px; }
+    .view { display: none; }
+    .view.active { display: grid; gap: 12px; }
 
     /* Modal */
-    dialog.modal { width:min(520px,92vw); border:1px solid var(--border); border-radius:16px; background:#0b1220; color:var(--fg); padding:0; }
-    .modal header, .modal footer { padding:12px 16px; border-bottom:1px solid var(--border); }
-    .modal footer { border-top:1px solid var(--border); border-bottom:none; display:flex; gap:8px; justify-content:flex-end; }
-    .modal .content { padding:16px; color:#cbd5e1; }
+    dialog.modal { width: min(520px, 92vw); border: 1px solid var(--border); border-radius: 16px; background: #0b1220; color: var(--fg); padding: 0; }
+    .modal header, .modal footer { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .modal footer { border-top: 1px solid var(--border); border-bottom: none; display: flex; gap: 8px; justify-content: flex-end; }
+    .modal .content { padding: 16px; color: #cbd5e1; }
   </style>
 </head>
+
 <body>
   <div class="app" id="app">
+    <!-- Cypress Logo -->
+    <div class="logo-header">
+      <a href="https://www.cypresscollege.edu/" target="_blank" rel="noopener">
+        <img src="https://www.cypresscollege.edu/wp-content/uploads/Cypress-College-Logo.png" alt="Cypress College Logo">
+      </a>
+    </div>
+
+    <!-- App Bar -->
     <header class="appbar">
       <button class="iconbtn" id="btnBack" aria-label="Back" title="Back" onclick="toast('Back tapped')">⟵</button>
-      <div class="title" id="appTitle">Cypress College</div>
+      <div class="title" id="appTitle">Home</div>
       <div style="margin-left:auto"></div>
       <button class="iconbtn" aria-label="Menu" title="Menu" onclick="openModal('menuModal')">☰</button>
     </header>
@@ -103,7 +147,7 @@
           <p style="margin:0; color: var(--muted)">Quick links for students, faculty, and visitors.</p>
         </div>
 
-        <!-- HERO SLIDESHOW (with translucent gray highlight on text) -->
+        <!-- HERO SLIDESHOW -->
         <section class="slider" id="heroSlider" aria-label="Highlights">
           <div class="slides">
             <article class="slide" style="background-image:url('https://www.cypresscollege.edu/wp-content/uploads/Page_Campus-Tour-Accessible_SEM_Exterior.jpg')">
@@ -139,54 +183,91 @@
           </div>
         </section>
 
+        <!-- Cypress-style Tiles -->
         <nav class="tiles" aria-label="Quick links">
           <a class="tile" href="https://www.cypresscollege.edu/admissions-and-records/apply/" target="_blank" rel="noopener">
-            <span class="icon">📝</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v-7"/><path d="M9 12h6"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+            </span>
             <span class="label">Apply Now</span>
+            <span class="sub">Start your application</span>
           </a>
           <a class="tile" href="https://cypresscollege.instructure.com/" target="_blank" rel="noopener">
-            <span class="icon">📚</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+            </span>
             <span class="label">Canvas</span>
+            <span class="sub">Courses & grades</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/find-classes/" target="_blank" rel="noopener">
-            <span class="icon">📅</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </span>
             <span class="label">Class Schedule</span>
+            <span class="sub">Find open classes</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/schedule-of-classes-and-college-catalog/" target="_blank" rel="noopener">
-            <span class="icon">📘</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V6a2 2 0 0 1 2-2h13"/><path d="M20 22V4a2 2 0 0 0-2-2H6"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20"/></svg>
+            </span>
             <span class="label">Catalog</span>
+            <span class="sub">Degrees & certificates</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/services/financial-aid/" target="_blank" rel="noopener">
-            <span class="icon">💸</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h.01"/></svg>
+            </span>
             <span class="label">Financial Aid</span>
+            <span class="sub">FAFSA & scholarships</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/services/counseling/" target="_blank" rel="noopener">
-            <span class="icon">🧭</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="m19 7-7-5-7 5"/><circle cx="12" cy="14" r="4"/></svg>
+            </span>
             <span class="label">Counseling</span>
+            <span class="sub">Plan your pathway</span>
           </a>
           <a class="tile" href="https://mygateway.nocccd.edu/" target="_blank" rel="noopener">
-            <span class="icon">🔐</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
             <span class="label">myGateway</span>
+            <span class="sub">Portal login</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/maps/" target="_blank" rel="noopener">
-            <span class="icon">🗺️</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18 3 21V5l6-3 6 3 6-3v16l-6 3-6-3Z"/><path d="M9 18V2"/><path d="M15 22V6"/></svg>
+            </span>
             <span class="label">Maps & Parking</span>
+            <span class="sub">Get around campus</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/faculty-and-staff-directory/" target="_blank" rel="noopener">
-            <span class="icon">📇</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>
+            </span>
             <span class="label">Directory</span>
+            <span class="sub">Find people & offices</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/events/" target="_blank" rel="noopener">
-            <span class="icon">🎉</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+            </span>
             <span class="label">Events</span>
+            <span class="sub">What’s happening</span>
           </a>
           <a class="tile" href="https://www.cypresscollege.edu/news/" target="_blank" rel="noopener">
-            <span class="icon">📰</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+            </span>
             <span class="label">News</span>
+            <span class="sub">Latest stories</span>
           </a>
           <a class="tile" href="https://careers.cypresscollege.edu/" target="_blank" rel="noopener">
-            <span class="icon">💼</span>
+            <span class="iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h4a2 2 0 0 1 2 2v2H8V8a2 2 0 0 1 2-2Z"/><path d="M16 10h2a2 2 0 0 1 2 2v6H4v-6a2 2 0 0 1 2-2h2"/></svg>
+            </span>
             <span class="label">Career Ed</span>
+            <span class="sub">Programs & pathways</span>
           </a>
         </nav>
       </section>
@@ -208,8 +289,10 @@
       </section>
     </main>
 
+    <!-- FAB -->
     <button class="fab" id="fab" aria-label="Create" title="Create" onclick="openModal('quickModal')">＋</button>
 
+    <!-- Tabs -->
     <nav class="tabs" aria-label="Primary">
       <ul>
         <li><button id="tab-home" aria-selected="true" onclick="switchTab('home')">🏠<span class="label">Home</span></button></li>
@@ -238,6 +321,7 @@
   </dialog>
 
   <script>
+    /* View + Tab logic */
     const views = {
       home: document.getElementById('view-home'),
       search: document.getElementById('view-search'),
@@ -255,15 +339,27 @@
       views[key].classList.add('active');
       tabs[key].setAttribute('aria-selected', 'true');
       document.getElementById('appTitle').textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function openModal(id){ const d=document.getElementById(id); if(d?.showModal) d.showModal(); else d?.setAttribute('open',''); }
     function closeModal(id){ const d=document.getElementById(id); if(d?.close) d.close(); else d?.removeAttribute('open'); }
 
-    // Tiny toast
-    let toastTimer; function toast(msg){ clearTimeout(toastTimer); let t=document.getElementById('toast'); if(!t){ t=document.createElement('div'); t.id='toast'; Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px',transform:'translateX(-50%)',background:'rgba(15,23,42,.9)',border:'1px solid var(--border)',padding:'10px 14px',borderRadius:'12px',fontWeight:'600',color:'var(--fg)',boxShadow:'0 10px 24px rgba(0,0,0,.35)'}); document.body.appendChild(t);} t.textContent=msg; t.style.opacity='1'; toastTimer=setTimeout(()=>t.style.opacity='0',1400); }
+    /* Tiny toast */
+    let toastTimer;
+    function toast(msg){
+      clearTimeout(toastTimer);
+      let t=document.getElementById('toast');
+      if(!t){
+        t=document.createElement('div'); t.id='toast';
+        Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px',transform:'translateX(-50%)',background:'rgba(15,23,42,.9)',border:'1px solid var(--border)',padding:'10px 14px',borderRadius:'12px',fontWeight:'600',color:'var(--fg)',boxShadow:'0 10px 24px rgba(0,0,0,.35)',zIndex:9999});
+        document.body.appendChild(t);
+      }
+      t.textContent=msg; t.style.opacity='1';
+      toastTimer=setTimeout(()=>t.style.opacity='0',1400);
+    }
 
-    // Slider logic
+    /* Slider logic (auto-rotate, swipe, dots) */
     const sliders = {};
     function initSlider(id){
       const root = document.getElementById(id); if(!root) return;
@@ -274,22 +370,31 @@
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(reduced){ slides.style.transition = 'none'; }
       startAuto(id);
-      // swipe support
+
+      // Swipe support
       let startX=null, dx=0;
       root.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; dx=0; stopAuto(id); }, {passive:true});
       root.addEventListener('touchmove', e=>{ if(startX==null) return; dx = e.touches[0].clientX - startX; }, {passive:true});
       root.addEventListener('touchend', ()=>{ if(Math.abs(dx) > 40){ dx>0? slidePrev(id): slideNext(id); } startX=null; startAuto(id); });
+
+      // Pause on hover (desktop)
       root.addEventListener('mouseenter', ()=>stopAuto(id));
       root.addEventListener('mouseleave', ()=>startAuto(id));
     }
-    function renderSlider(id){ const s = sliders[id]; if(!s) return; s.slides.style.transform = `translateX(${-s.index*100}%)`; s.dots.forEach((d,i)=>{ d.toggleAttribute('aria-current', i===s.index); d.setAttribute('aria-selected', i===s.index?'true':'false'); }); }
+    function renderSlider(id){
+      const s = sliders[id]; if(!s) return;
+      s.slides.style.transform = `translateX(${-s.index*100}%)`;
+      s.dots.forEach((d,i)=>{ d.toggleAttribute('aria-current', i===s.index); d.setAttribute('aria-selected', i===s.index?'true':'false'); });
+    }
     function slideTo(id,i){ const s=sliders[id]; if(!s) return; s.index = (i+s.count)%s.count; renderSlider(id); }
     function slideNext(id){ const s=sliders[id]; if(!s) return; s.index = (s.index+1)%s.count; renderSlider(id); }
     function slidePrev(id){ const s=sliders[id]; if(!s) return; s.index = (s.index-1+s.count)%s.count; renderSlider(id); }
     function startAuto(id){ const s=sliders[id]; if(!s) return; stopAuto(id); s.timer = setInterval(()=>slideNext(id), 5000); }
     function stopAuto(id){ const s=sliders[id]; if(!s) return; if(s.timer) clearInterval(s.timer); s.timer=null; }
 
-    document.addEventListener('DOMContentLoaded', ()=>{ initSlider('heroSlider'); });
+    document.addEventListener('DOMContentLoaded', ()=>{
+      initSlider('heroSlider');
+    });
   </script>
 </body>
 </html>
